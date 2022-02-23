@@ -16,12 +16,19 @@ inputs:
   started-by:
     description: "The value of the task started-by"
     required: false
+  subnets:
+    description: 'The list of subnets'
+    required: true
+  security-groups:
+    description: 'The list of Security Groups'
+    required: true
   wait-for-finish:
     description: "Whether to wait for tasks to reach stopped state. Will default to not waiting"
     required: false
   wait-for-minutes:
     description: 'How long to wait for the task reach stopped state, in minutes (default: 30 minutes, max: 6 hours).'
     required: false
+
 outputs:
   task-definition-arn:
     description: 'The ARN of the registered ECS task definition'

@@ -94,6 +94,10 @@ async function run() {
     if (waitForMinutes > MAX_WAIT_MINUTES) {
       waitForMinutes = MAX_WAIT_MINUTES;
     }
+    const subnets = core.getMultilineInput("subnets", { required: true });
+    const securityGroups = core.getMultilineInput("security-groups", {
+      required: true,
+    });
 
     // Register the task definition
     core.debug('Registering the task definition');
@@ -128,7 +132,13 @@ async function run() {
       cluster: clusterName,
       taskDefinition: taskDefArn,
       count: count,
-      startedBy: startedBy
+      startedBy: startedBy,
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          subnets,
+          securityGroups,
+        },
+      },
     }).promise();
 
     core.debug(`Run task response ${JSON.stringify(runTaskResponse)}`)
