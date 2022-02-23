@@ -109,6 +109,8 @@ async function run() {
     const fileContents = fs.readFileSync(taskDefPath, 'utf8');
     const taskDefContents = removeIgnoredAttributes(cleanNullKeys(yaml.parse(fileContents)));
 
+    core.setOutput(JSON.stringify(taskDefContents, undefined, 4));
+
     let registerResponse;
     try {
       registerResponse = await ecs.registerTaskDefinition(taskDefContents).promise();
