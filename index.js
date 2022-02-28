@@ -96,8 +96,8 @@ async function run() {
     if (waitForMinutes > MAX_WAIT_MINUTES) {
       waitForMinutes = MAX_WAIT_MINUTES;
     }
-    const subnets = core.getMultilineInput("subnets", { required: true });
-    const securityGroups = core.getMultilineInput("security-groups", {
+    const subnets = core.getInput("subnets", { required: true });
+    const securityGroups = core.getInput("security-groups", {
       required: true,
     });
 
