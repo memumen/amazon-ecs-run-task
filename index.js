@@ -97,9 +97,7 @@ async function run() {
       waitForMinutes = MAX_WAIT_MINUTES;
     }
     const subnets = core.getInput("subnets", { required: true });
-    const securityGroups = core.getInput("security-groups", {
-      required: true,
-    });
+    const securityGroups = core.getInput("security-groups", { required: true });
 
     // Register the task definition
     core.debug('Registering the task definition');
@@ -108,8 +106,6 @@ async function run() {
       path.join(process.env.GITHUB_WORKSPACE, taskDefinitionFile);
     const fileContents = fs.readFileSync(taskDefPath, 'utf8');
     const taskDefContents = removeIgnoredAttributes(cleanNullKeys(yaml.parse(fileContents)));
-
-    core.setOutput(JSON.stringify(taskDefContents, undefined, 4));
 
     let registerResponse;
     try {
