@@ -137,6 +137,7 @@ async function run() {
       taskDefinition: taskDefArn,
       count: count,
       startedBy: startedBy,
+      launchType: 'FARGATE',
       networkConfiguration: {
         awsvpcConfiguration: {
           subnets: subnets.split("|"),
