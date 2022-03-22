@@ -139,8 +139,8 @@ async function run() {
       startedBy: startedBy,
       networkConfiguration: {
         awsvpcConfiguration: {
-          subnets,
-          securityGroups,
+          subnets: subnets.split("|"),
+          securityGroups: securityGroups.split("|"),
         },
       },
     }).promise();
