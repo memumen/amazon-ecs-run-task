@@ -67,10 +67,10 @@ function cleanNullKeys(obj) {
 function removeIgnoredAttributes(taskDef) {
   for (var attribute of IGNORED_TASK_DEFINITION_ATTRIBUTES) {
     if (taskDef[attribute]) {
-      core.warning(`Ignoring property '${attribute}' in the task definition file. ` +
-        'This property is returned by the Amazon ECS DescribeTaskDefinition API and may be shown in the ECS console, ' +
-        'but it is not a valid field when registering a new task definition. ' +
-        'This field can be safely removed from your task definition file.');
+      // core.warning(`Ignoring property '${attribute}' in the task definition file. ` +
+      //   'This property is returned by the Amazon ECS DescribeTaskDefinition API and may be shown in the ECS console, ' +
+      //   'but it is not a valid field when registering a new task definition. ' +
+      //   'This field can be safely removed from your task definition file.');
       delete taskDef[attribute];
     }
   }
