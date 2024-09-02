@@ -137,7 +137,7 @@ async function run() {
     const runTaskResponse = await ecs.runTask({
       cluster: clusterName,
       taskDefinition: taskDefArn,
-      count: count,
+      count: parseInt(count),
       startedBy: startedBy,
       launchType: 'FARGATE',
       networkConfiguration: {
