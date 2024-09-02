@@ -165,8 +165,8 @@ async function run() {
 
     // Wait for task to end
     if (waitForFinish && waitForFinish.toLowerCase() === "true") {
-      await waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes)
-      await tasksExitCode(ecs, clusterName, taskArns)
+      await waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes);
+      await tasksExitCode(ecs, clusterName, taskArns);
     } else {
       core.debug('Not waiting for the task to stop');
     }
@@ -211,7 +211,7 @@ async function tasksExitCode(ecs, clusterName, taskArns) {
   const reasons = containers.map(container => container.reason)
 
   const failuresIdx = [];
-  
+
   exitCodes.filter((exitCode, index) => {
     if (exitCode !== 0) {
       failuresIdx.push(index)
@@ -219,11 +219,8 @@ async function tasksExitCode(ecs, clusterName, taskArns) {
   })
 
   const failures = reasons.filter((_, index) => failuresIdx.indexOf(index) !== -1)
-
   if (failures.length > 0) {
-    core.setFailed(failures.join("\n"));
-  } else {
-    core.info(`All tasks have exited successfully.`);
+    throw new Error(`Run task failed: ${JSON.stringify(failures)}`);
   }
 }
 
