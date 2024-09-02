@@ -164,7 +164,7 @@ async function run() {
     }
 
     // Wait for task to end
-    if (waitForTask && waitForTask.toLowerCase() === "true") {
+    if (waitForFinish && waitForFinish.toLowerCase() === "true") {
       await waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes)
       await tasksExitCode(ecs, clusterName, taskArns)
     } else {
