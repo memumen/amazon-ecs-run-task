@@ -206,13 +206,21 @@ async function tasksExitCode(ecs, clusterName, taskArns) {
 
   const failuresIdx = [];
 
+  core.debug(`containers ${JSON.stringify(containers)}`);
+  core.debug(`exitCodes ${JSON.stringify(exitCodes)}`);
+  core.debug(`reasons ${JSON.stringify(reasons)}`);
+
   exitCodes.filter((exitCode, index) => {
+    core.debug(`exitCode ${JSON.stringify(exitCode)}`);
     if (exitCode !== 0) {
       failuresIdx.push(index)
     }
   })
 
-  const failures = reasons.filter((_, index) => failuresIdx.indexOf(index) !== -1)
+  const failures = reasons.filter((_, index) => failuresIdx.indexOf(index) !== -1);
+
+  core.debug(`failures ${JSON.stringify(failures)}`);
+
   if (failures.length > 0) {
     throw new Error(`Run task failed: ${JSON.stringify(failures)}`);
   }
