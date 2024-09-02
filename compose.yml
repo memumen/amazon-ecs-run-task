@@ -1,0 +1,22 @@
+services:
+  runner:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        NODE_MAJOR: '20'
+    stdin_open: true
+    tty: true
+    image: memumen-amazon-ecs-run-task
+    volumes:
+      - node_modules:/app/node_modules
+      - .:/app:cached
+    tmpfs:
+      - /tmp
+    command: sh
+    logging:
+      options:
+        max-size: "20m"
+
+volumes:
+  node_modules:

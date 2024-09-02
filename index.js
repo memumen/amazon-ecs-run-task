@@ -1,6 +1,6 @@
 const path = require('path');
 const core = require('@actions/core');
-const aws = require('aws-sdk');
+const { ECS, waitUntilTasksStopped } = require('@aws-sdk/client-ecs');
 const yaml = require('yaml');
 const fs = require('fs');
 
@@ -82,7 +82,7 @@ async function run() {
   try {
     const agent = 'amazon-ecs-run-task-for-github-actions'
 
-    const ecs = new aws.ECS({
+    const ecs = new ECS({
       customUserAgent: agent
     });
 
@@ -109,7 +109,7 @@ async function run() {
 
     let registerResponse;
     try {
-      registerResponse = await ecs.registerTaskDefinition(taskDefContents).promise();
+      registerResponse = await ecs.registerTaskDefinition(taskDefContents);
     } catch (error) {
       core.setFailed("Failed to register task definition in ECS: " + error.message);
       core.debug("Task definition contents:");
@@ -140,7 +140,7 @@ async function run() {
           securityGroups: securityGroups.split("|"),
         },
       },
-    }).promise();
+    });
 
     core.debug(`Run task response ${JSON.stringify(runTaskResponse)}`)
 
@@ -172,26 +172,26 @@ async function waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes) {
   const maxAttempts = (waitForMinutes * 60) / WAIT_DEFAULT_DELAY_SEC;
 
   core.debug('Waiting for tasks to stop');
-  
-  const waitTaskResponse = await ecs.waitFor('tasksStopped', {
+
+  const waitTaskResponse = await waitUntilTasksStopped({
+    client: ecs,
+    minDelay: WAIT_DEFAULT_DELAY_SEC,
+    maxWaitTime: waitForMinutes * 60,
+    maxAttempts: maxAttempts
+  }, {
     cluster: clusterName,
     tasks: taskArns,
-    $waiter: {
-      delay: WAIT_DEFAULT_DELAY_SEC,
-      maxAttempts: maxAttempts
-    }
-  }).promise();
+  });
 
-  core.debug(`Run task response ${JSON.stringify(waitTaskResponse)}`)
-  
-  core.info(`All tasks have stopped. Watch progress in the Amazon ECS console: https://console.aws.amazon.com/ecs/home?region=${aws.config.region}#/clusters/${clusterName}/tasks`);
+  core.debug(`Run task response ${JSON.stringify(waitTaskResponse)}`);
+  core.info('All tasks have stopped.');
 }
 
 async function tasksExitCode(ecs, clusterName, taskArns) {
   const describeResponse = await ecs.describeTasks({
     cluster: clusterName,
     tasks: taskArns
-  }).promise();
+  });
 
   const containers = [].concat(...describeResponse.tasks.map(task => task.containers))
   const exitCodes = containers.map(container => container.exitCode)
