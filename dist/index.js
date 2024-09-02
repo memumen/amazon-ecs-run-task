@@ -150,18 +150,25 @@ async function run() {
 
     core.debug(`Run task response ${JSON.stringify(runTaskResponse)}`)
 
+    const taskArns = runTaskResponse.tasks.map(task => task.taskArn);
+    core.setOutput('run-task-arn', taskArns);
+
+    const region = await ecs.config.region();
+    const consoleHostname = region.startsWith('cn') ? 'console.amazonaws.cn' : 'console.aws.amazon.com';
+
+    core.info(`Task running: https://${consoleHostname}/ecs/home?region=${region}#/clusters/${clusterName}/tasks`);
+
     if (runTaskResponse.failures && runTaskResponse.failures.length > 0) {
       const failure = runTaskResponse.failures[0];
       throw new Error(`${failure.arn} is ${failure.reason}`);
     }
 
-    const taskArns = runTaskResponse.tasks.map(task => task.taskArn);
-
-    core.setOutput('task-arn', taskArns);
-
-    if (waitForFinish && waitForFinish.toLowerCase() === 'true') {
-      await waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes);
-      await tasksExitCode(ecs, clusterName, taskArns);
+    // Wait for task to end
+    if (waitForTask && waitForTask.toLowerCase() === "true") {
+      await waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes)
+      await tasksExitCode(ecs, clusterName, taskArns)
+    } else {
+      core.debug('Not waiting for the task to stop');
     }
   }
   catch (error) {
